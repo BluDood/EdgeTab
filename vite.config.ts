@@ -14,7 +14,7 @@ console.log(`Building for ${browser}`)
 export default defineConfig({
   plugins: [
     react(),
-    crx({ manifest: generateManifest(browser) }),
+    crx({ manifest: generateManifest(pkg.version, browser) }),
     zip({
       outDir: 'release',
       outFileName: `${pkg.name}-${pkg.version}-${browser}.zip`

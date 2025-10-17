@@ -1,10 +1,13 @@
 import { defineManifest } from '@crxjs/vite-plugin'
 
-export default function generateManifest(browser: string) {
+export default function generateManifest(
+  version: string,
+  browser: string
+) {
   return defineManifest({
     manifest_version: 3,
     name: 'EdgeTab',
-    version: '1.0.0',
+    version,
     description:
       'A fresh, modern and minimal new tab page for your browser.',
     chrome_url_overrides: {
