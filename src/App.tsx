@@ -31,6 +31,15 @@ export default function App() {
     localStorage.getItem('customBackgroundImage')
   )
 
+  const [backgroundEffects, setBackgroundEffects] = useState(() => {
+    const saved = localStorage.getItem('backgroundEffects')
+    return saved ? JSON.parse(saved) : {
+      brightness: 100,
+      opacity: 100,
+      vignette: 0
+    }
+  })
+
   const settingsRef = useRef<HTMLDivElement>(null)
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,6 +66,15 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('useStaticImage', useStaticImage.toString())
   }, [useStaticImage])
+
+  // Persist background effects
+  useEffect(() => {
+    localStorage.setItem('backgroundEffects', JSON.stringify(backgroundEffects))
+  }, [backgroundEffects])
+
+  const updateEffect = (key: 'brightness' | 'opacity' | 'vignette', value: number) => {
+    setBackgroundEffects(prev => ({ ...prev, [key]: value }))
+  }
 
   async function updateSuggestions(query: string) {
     const suggestions = await getSuggestions(query)
@@ -142,6 +160,10 @@ export default function App() {
               muted
               autoPlay
               loop
+              style={{
+                filter: `brightness(${backgroundEffects.brightness}%)`,
+                opacity: backgroundEffects.opacity / 100
+              }}
             />
           ) : null}
           {(useStaticImage || !video.video || reducedMotion) && (
@@ -151,12 +173,21 @@ export default function App() {
               data-shown={imageShown}
               onLoad={() => setImageShown(true)}
               alt="background"
+              style={{
+                filter: `brightness(${backgroundEffects.brightness}%)`,
+                opacity: backgroundEffects.opacity / 100
+              }}
             />
           )}
         </>
       ) : null}
 
-      <div className={styles.overlay}></div>
+      <div 
+        className={styles.overlay}
+        style={{
+          background: `radial-gradient(circle, transparent ${100 - backgroundEffects.vignette}%, rgba(0, 0, 0, ${backgroundEffects.vignette / 100}) 100%)`
+        }}
+      ></div>
 
       {/* Settings Button */}
       <div className={styles.settingsContainer} ref={settingsRef}>
@@ -194,6 +225,50 @@ export default function App() {
                 Clear Custom Image
               </button>
             )}
+
+            <div className={styles.settingsDivider}></div>
+
+            <div className={styles.sliderContainer}>
+              <label className={styles.sliderLabel}>
+                Brightness: {backgroundEffects.brightness}%
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="200"
+                value={backgroundEffects.brightness}
+                onChange={(e) => updateEffect('brightness', Number(e.target.value))}
+                className={styles.slider}
+              />
+            </div>
+
+            <div className={styles.sliderContainer}>
+              <label className={styles.sliderLabel}>
+                Opacity: {backgroundEffects.opacity}%
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={backgroundEffects.opacity}
+                onChange={(e) => updateEffect('opacity', Number(e.target.value))}
+                className={styles.slider}
+              />
+            </div>
+
+            <div className={styles.sliderContainer}>
+              <label className={styles.sliderLabel}>
+                Vignette: {backgroundEffects.vignette}%
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={backgroundEffects.vignette}
+                onChange={(e) => updateEffect('vignette', Number(e.target.value))}
+                className={styles.slider}
+              />
+            </div>
           </div>
         )}
       </div>
