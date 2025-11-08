@@ -155,15 +155,16 @@ video.background {
   background: rgba(74, 74, 74, 0.95);
   transform: rotate(45deg);
   border-color: #0064ff;
+  box-shadow: 0 0 12px rgba(0, 100, 255, 0.3);
 }
 
 .settingsMenu {
   position: absolute;
   top: 54px;
   right: 0;
-  background: rgba(74, 74, 74, 0.95);
+  background: rgba(30, 30, 30, 0.95);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 12px;
   padding: 8px 0;
   min-width: 200px;
@@ -175,7 +176,7 @@ video.background {
   display: block;
   width: calc(100% - 32px);
   padding: 10px 16px;
-  color: #fff;
+  color: #e0e0e0;
   font-size: 14px;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
@@ -183,10 +184,10 @@ video.background {
 }
 
 .settingsOption:hover {
-  background: rgba(0, 100, 255, 0.2);
-  color: #0064ff;
+  background: rgba(0, 100, 255, 0.15);
+  color: #4da6ff;
 }
 
 .settingsOption:not(:last-child) {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
