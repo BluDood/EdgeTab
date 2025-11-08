@@ -1,4 +1,4 @@
-import { useEffect, useState, type KeyboardEvent } from 'react'
+import { useEffect, useState, useRef, type KeyboardEvent } from 'react'
 import AnimateHeight from 'react-animate-height'
 
 import { getSuggestions, search } from './lib/search.ts'
@@ -19,6 +19,70 @@ export default function App() {
   const [videoShown, setVideoShown] = useState(false)
   const [imageShown, setImageShown] = useState(false)
   const [reducedMotion, setReducedMotion] = useState<boolean>(false)
+  const [settingsOpen, setSettingsOpen] = useState(false)
+
+  // Load user preference from localStorage, default to false (video)
+  const [useStaticImage, setUseStaticImage] = useState(() => {
+    const saved = localStorage.getItem('useStaticImage')
+    return saved ? saved === 'true' : false
+  })
+
+  const [customImage, setCustomImage] = useState<string | null>(
+    localStorage.getItem('customBackgroundImage')
+  )
+
+  const [backgroundEffects, setBackgroundEffects] = useState(() => {
+    const saved = localStorage.getItem('backgroundEffects')
+    return saved ? JSON.parse(saved) : {
+      brightness: 100,
+      opacity: 100,
+      vignette: 0
+    }
+  })
+
+  const settingsRef = useRef<HTMLDivElement>(null)
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        const imageUrl = event.target?.result as string
+        setCustomImage(imageUrl)
+        localStorage.setItem('customBackgroundImage', imageUrl)
+        setUseStaticImage(true)
+        localStorage.setItem('useStaticImage', 'true')
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const clearCustomImage = () => {
+    setCustomImage(null)
+    localStorage.removeItem('customBackgroundImage')
+  }
+
+  // Persist useStaticImage preference
+  useEffect(() => {
+    localStorage.setItem('useStaticImage', useStaticImage.toString())
+  }, [useStaticImage])
+
+  // Persist background effects
+  useEffect(() => {
+    localStorage.setItem('backgroundEffects', JSON.stringify(backgroundEffects))
+  }, [backgroundEffects])
+
+  const updateEffect = (key: 'brightness' | 'opacity' | 'vignette', value: number) => {
+    setBackgroundEffects(prev => ({ ...prev, [key]: value }))
+  }
+
+  const resetEffects = () => {
+    setBackgroundEffects({
+      brightness: 100,
+      opacity: 100,
+      vignette: 0
+    })
+  }
 
   async function updateSuggestions(query: string) {
     const suggestions = await getSuggestions(query)
@@ -71,14 +135,31 @@ export default function App() {
     const closest = [240, 720, 1080, 1440, 2160].reduce((prev, curr) =>
       Math.abs(curr - width) < Math.abs(prev - width) ? curr : prev
     )
-    getRandomVideo(closest).then(setVideo)
-  }, [])
+
+    getRandomVideo(closest, useStaticImage).then(setVideo)
+  }, [useStaticImage])
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (settingsRef.current && !settingsRef.current.contains(event.target as Node)) {
+        setSettingsOpen(false)
+      }
+    }
+
+    if (settingsOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [settingsOpen])
 
   return (
     <div className={styles.app}>
       {video ? (
         <>
-          {!reducedMotion ? (
+          {!reducedMotion && !useStaticImage && video.video ? (
             <video
               className={styles.background}
               src={video.video}
@@ -87,19 +168,155 @@ export default function App() {
               muted
               autoPlay
               loop
+              style={{
+                filter: `brightness(${backgroundEffects.brightness}%)`,
+                opacity: backgroundEffects.opacity / 100
+              }}
             />
           ) : null}
-          <img
-            className={styles.background}
-            src={video.image}
-            data-shown={imageShown}
-            onLoad={() => setImageShown(true)}
-            alt="background"
-          />
+          {(useStaticImage || !video.video || reducedMotion) && (
+            <img
+              className={styles.background}
+              src={customImage || video.image}
+              data-shown={imageShown}
+              onLoad={() => setImageShown(true)}
+              alt="background"
+              style={{
+                filter: `brightness(${backgroundEffects.brightness}%)`,
+                opacity: backgroundEffects.opacity / 100
+              }}
+            />
+          )}
         </>
       ) : null}
 
-      <div className={styles.overlay}></div>
+      <div 
+        className={styles.overlay}
+        style={{
+          background: `radial-gradient(circle, transparent ${100 - backgroundEffects.vignette}%, rgba(0, 0, 0, ${backgroundEffects.vignette / 100}) 100%)`
+        }}
+      ></div>
+
+      {/* Settings Button */}
+      <div className={styles.settingsContainer} ref={settingsRef}>
+        <button
+          className={styles.settingsButton}
+          onClick={() => setSettingsOpen(prev => !prev)}
+        >
+          ⚙️
+        </button>
+        {settingsOpen && (
+          <div className={styles.settingsMenu}>
+            <div className={styles.settingsHeader}>
+              <span>Settings</span>
+              <button 
+                className={styles.closeButton}
+                onClick={() => setSettingsOpen(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className={styles.settingsSection}>
+              <div className={styles.sectionTitle}>Background Mode</div>
+              <button
+                className={styles.settingsOption}
+                onClick={() => setUseStaticImage(prev => !prev)}
+              >
+                <span className={styles.optionText}>
+                  {useStaticImage ? 'Use Video Background' : 'Use Static Image'}
+                </span>
+              </button>
+              
+              <label className={styles.settingsOption} htmlFor="imageUpload">
+                <span className={styles.optionText}>Upload Custom Image</span>
+              </label>
+              <input
+                id="imageUpload"
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                style={{ display: 'none' }}
+              />
+              
+              {customImage && (
+                <button
+                  className={styles.settingsOption}
+                  onClick={clearCustomImage}
+                >
+                  <span className={styles.optionText}>Clear Custom Image</span>
+                </button>
+              )}
+            </div>
+
+            <div className={styles.settingsDivider}></div>
+
+            <div className={styles.settingsSection}>
+              <div className={styles.sectionTitle}>Visual Effects</div>
+              
+              <div className={styles.sliderContainer}>
+                <div className={styles.sliderHeader}>
+                  <label className={styles.sliderLabel}>
+                    Brightness
+                  </label>
+                  <span className={styles.sliderValue}>{backgroundEffects.brightness}%</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="200"
+                  value={backgroundEffects.brightness}
+                  onChange={(e) => updateEffect('brightness', Number(e.target.value))}
+                  className={styles.slider}
+                />
+              </div>
+
+              <div className={styles.sliderContainer}>
+                <div className={styles.sliderHeader}>
+                  <label className={styles.sliderLabel}>
+                    Opacity
+                  </label>
+                  <span className={styles.sliderValue}>{backgroundEffects.opacity}%</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={backgroundEffects.opacity}
+                  onChange={(e) => updateEffect('opacity', Number(e.target.value))}
+                  className={styles.slider}
+                />
+              </div>
+
+              <div className={styles.sliderContainer}>
+                <div className={styles.sliderHeader}>
+                  <label className={styles.sliderLabel}>
+                    Vignette
+                  </label>
+                  <span className={styles.sliderValue}>{backgroundEffects.vignette}%</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={backgroundEffects.vignette}
+                  onChange={(e) => updateEffect('vignette', Number(e.target.value))}
+                  className={styles.slider}
+                />
+              </div>
+
+              <button
+                className={styles.resetButton}
+                onClick={resetEffects}
+              >
+                <span className={styles.resetIcon}>↻</span>
+                Reset Effects
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
       <div className={styles.search}>
         <div className={styles.box}>
           <span className="material-symbols">search</span>
@@ -117,6 +334,7 @@ export default function App() {
           }
           duration={200}
         >
+          
           {suggestions.map((s, i) => (
             <button
               className={styles.suggestion}
