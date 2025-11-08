@@ -52,7 +52,15 @@ async function getVideos() {
   return filterVideos(res.data)
 }
 
-export async function getRandomVideo(quality = 1080) {
+export async function getRandomVideo(quality = 1080, useStaticImage = false) {
+  if (useStaticImage) {
+    return {
+      attribution: 'Static Image',
+      image: '/static/background.jpg', // place your image in /public/static/
+      video: ''
+    }
+  }
+
   const videos = await getVideos()
   if (!videos || videos.length === 0) return null
 

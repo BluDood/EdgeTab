@@ -20,6 +20,8 @@ export default function App() {
   const [imageShown, setImageShown] = useState(false)
   const [reducedMotion, setReducedMotion] = useState<boolean>(false)
 
+
+
   async function updateSuggestions(query: string) {
     const suggestions = await getSuggestions(query)
     setSuggestions([query, ...suggestions.slice(0, 5)])
@@ -61,6 +63,8 @@ export default function App() {
     }, 0)
   }
 
+  const [useStaticImage, setUseStaticImage] = useState(true)
+
   useEffect(() => {
     const prefersImage = window.matchMedia(
       '(prefers-reduced-motion: reduce)'
@@ -71,14 +75,15 @@ export default function App() {
     const closest = [240, 720, 1080, 1440, 2160].reduce((prev, curr) =>
       Math.abs(curr - width) < Math.abs(prev - width) ? curr : prev
     )
-    getRandomVideo(closest).then(setVideo)
-  }, [])
+
+    getRandomVideo(closest, useStaticImage).then(setVideo)
+  }, [useStaticImage])
 
   return (
     <div className={styles.app}>
       {video ? (
         <>
-          {!reducedMotion ? (
+          {!reducedMotion && video.video ? (
             <video
               className={styles.background}
               src={video.video}
@@ -100,6 +105,15 @@ export default function App() {
       ) : null}
 
       <div className={styles.overlay}></div>
+
+
+      <button
+        className={styles.toggleButton}
+        onClick={() => setUseStaticImage(prev => !prev)}
+        >
+        {useStaticImage ? 'Use Video Background' : 'Use Static Image'}
+        </button>
+
       <div className={styles.search}>
         <div className={styles.box}>
           <span className="material-symbols">search</span>
@@ -117,6 +131,7 @@ export default function App() {
           }
           duration={200}
         >
+          
           {suggestions.map((s, i) => (
             <button
               className={styles.suggestion}
