@@ -19,8 +19,30 @@ export default function App() {
   const [videoShown, setVideoShown] = useState(false)
   const [imageShown, setImageShown] = useState(false)
   const [reducedMotion, setReducedMotion] = useState<boolean>(false)
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const [useStaticImage, setUseStaticImage] = useState(false)
+  const [customImage, setCustomImage] = useState<string | null>(
+    localStorage.getItem('customBackgroundImage')
+  )
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        const imageUrl = event.target?.result as string
+        setCustomImage(imageUrl)
+        localStorage.setItem('customBackgroundImage', imageUrl)
+        setUseStaticImage(true)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
 
+  const clearCustomImage = () => {
+    setCustomImage(null)
+    localStorage.removeItem('customBackgroundImage')
+  }
 
   async function updateSuggestions(query: string) {
     const suggestions = await getSuggestions(query)
@@ -63,8 +85,6 @@ export default function App() {
     }, 0)
   }
 
-  const [useStaticImage, setUseStaticImage] = useState(true)
-
   useEffect(() => {
     const prefersImage = window.matchMedia(
       '(prefers-reduced-motion: reduce)'
@@ -96,7 +116,7 @@ export default function App() {
           ) : null}
           <img
             className={styles.background}
-            src={video.image}
+            src={customImage || video.image}
             data-shown={imageShown}
             onLoad={() => setImageShown(true)}
             alt="background"
@@ -106,13 +126,45 @@ export default function App() {
 
       <div className={styles.overlay}></div>
 
-
-      <button
-        className={styles.toggleButton}
-        onClick={() => setUseStaticImage(prev => !prev)}
+      {/* Settings Button */}
+      <div className={styles.settingsContainer}>
+        <button
+          className={styles.settingsButton}
+          onClick={() => setSettingsOpen(prev => !prev)}
         >
-        {useStaticImage ? 'Use Video Background' : 'Use Static Image'}
+          ⚙️
         </button>
+        {settingsOpen && (
+          <div className={styles.settingsMenu}>
+            <button
+              className={styles.settingsOption}
+              onClick={() => setUseStaticImage(prev => !prev)}
+            >
+              {useStaticImage ? 'Use Video Background' : 'Use Static Image'}
+            </button>
+            
+            <label className={styles.settingsOption} htmlFor="imageUpload">
+              Upload Custom Image
+            </label>
+            <input
+              id="imageUpload"
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              style={{ display: 'none' }}
+            />
+            
+            {customImage && (
+              <button
+                className={styles.settingsOption}
+                onClick={clearCustomImage}
+              >
+                Clear Custom Image
+              </button>
+            )}
+          </div>
+        )}
+      </div>
 
       <div className={styles.search}>
         <div className={styles.box}>
