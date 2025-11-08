@@ -359,3 +359,37 @@ video.background {
 .slider::-moz-range-thumb:active {
   transform: scale(1.1);
 }
+
+.resetButton {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: calc(100% - 80px);
+  margin: 12px auto 8px;
+  padding: 10px 16px;
+  background: rgba(0, 100, 255, 0.15);
+  border: 1px solid rgba(0, 100, 255, 0.3);
+  border-radius: 8px;
+  color: #4da6ff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.1s;
+}
+
+.resetButton:hover {
+  background: rgba(0, 100, 255, 0.25);
+  border-color: rgba(77, 166, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+.resetButton:active {
+  transform: translateY(0);
+}
+
+.resetIcon {
+  font-size: 16px;
+  font-weight: bold;
+}

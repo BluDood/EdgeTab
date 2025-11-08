@@ -76,6 +76,14 @@ export default function App() {
     setBackgroundEffects(prev => ({ ...prev, [key]: value }))
   }
 
+  const resetEffects = () => {
+    setBackgroundEffects({
+      brightness: 100,
+      opacity: 100,
+      vignette: 0
+    })
+  }
+
   async function updateSuggestions(query: string) {
     const suggestions = await getSuggestions(query)
     setSuggestions([query, ...suggestions.slice(0, 5)])
@@ -199,75 +207,111 @@ export default function App() {
         </button>
         {settingsOpen && (
           <div className={styles.settingsMenu}>
-            <button
-              className={styles.settingsOption}
-              onClick={() => setUseStaticImage(prev => !prev)}
-            >
-              {useStaticImage ? 'Use Video Background' : 'Use Static Image'}
-            </button>
-            
-            <label className={styles.settingsOption} htmlFor="imageUpload">
-              Upload Custom Image
-            </label>
-            <input
-              id="imageUpload"
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              style={{ display: 'none' }}
-            />
-            
-            {customImage && (
+            <div className={styles.settingsHeader}>
+              <span>Settings</span>
+              <button 
+                className={styles.closeButton}
+                onClick={() => setSettingsOpen(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className={styles.settingsSection}>
+              <div className={styles.sectionTitle}>Background Mode</div>
               <button
                 className={styles.settingsOption}
-                onClick={clearCustomImage}
+                onClick={() => setUseStaticImage(prev => !prev)}
               >
-                Clear Custom Image
+                <span className={styles.optionText}>
+                  {useStaticImage ? 'Use Video Background' : 'Use Static Image'}
+                </span>
               </button>
-            )}
+              
+              <label className={styles.settingsOption} htmlFor="imageUpload">
+                <span className={styles.optionText}>Upload Custom Image</span>
+              </label>
+              <input
+                id="imageUpload"
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                style={{ display: 'none' }}
+              />
+              
+              {customImage && (
+                <button
+                  className={styles.settingsOption}
+                  onClick={clearCustomImage}
+                >
+                  <span className={styles.optionText}>Clear Custom Image</span>
+                </button>
+              )}
+            </div>
 
             <div className={styles.settingsDivider}></div>
 
-            <div className={styles.sliderContainer}>
-              <label className={styles.sliderLabel}>
-                Brightness: {backgroundEffects.brightness}%
-              </label>
-              <input
-                type="range"
-                min="0"
-                max="200"
-                value={backgroundEffects.brightness}
-                onChange={(e) => updateEffect('brightness', Number(e.target.value))}
-                className={styles.slider}
-              />
-            </div>
+            <div className={styles.settingsSection}>
+              <div className={styles.sectionTitle}>Visual Effects</div>
+              
+              <div className={styles.sliderContainer}>
+                <div className={styles.sliderHeader}>
+                  <label className={styles.sliderLabel}>
+                    Brightness
+                  </label>
+                  <span className={styles.sliderValue}>{backgroundEffects.brightness}%</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="200"
+                  value={backgroundEffects.brightness}
+                  onChange={(e) => updateEffect('brightness', Number(e.target.value))}
+                  className={styles.slider}
+                />
+              </div>
 
-            <div className={styles.sliderContainer}>
-              <label className={styles.sliderLabel}>
-                Opacity: {backgroundEffects.opacity}%
-              </label>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={backgroundEffects.opacity}
-                onChange={(e) => updateEffect('opacity', Number(e.target.value))}
-                className={styles.slider}
-              />
-            </div>
+              <div className={styles.sliderContainer}>
+                <div className={styles.sliderHeader}>
+                  <label className={styles.sliderLabel}>
+                    Opacity
+                  </label>
+                  <span className={styles.sliderValue}>{backgroundEffects.opacity}%</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={backgroundEffects.opacity}
+                  onChange={(e) => updateEffect('opacity', Number(e.target.value))}
+                  className={styles.slider}
+                />
+              </div>
 
-            <div className={styles.sliderContainer}>
-              <label className={styles.sliderLabel}>
-                Vignette: {backgroundEffects.vignette}%
-              </label>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={backgroundEffects.vignette}
-                onChange={(e) => updateEffect('vignette', Number(e.target.value))}
-                className={styles.slider}
-              />
+              <div className={styles.sliderContainer}>
+                <div className={styles.sliderHeader}>
+                  <label className={styles.sliderLabel}>
+                    Vignette
+                  </label>
+                  <span className={styles.sliderValue}>{backgroundEffects.vignette}%</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={backgroundEffects.vignette}
+                  onChange={(e) => updateEffect('vignette', Number(e.target.value))}
+                  className={styles.slider}
+                />
+              </div>
+
+              <button
+                className={styles.resetButton}
+                onClick={resetEffects}
+              >
+                <span className={styles.resetIcon}>↻</span>
+                Reset Effects
+              </button>
             </div>
           </div>
         )}
