@@ -147,13 +147,14 @@ video.background {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s ease, transform 0.2s ease;
+  transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .settingsButton:hover {
   background: rgba(74, 74, 74, 0.95);
   transform: rotate(45deg);
+  border-color: #0064ff;
 }
 
 .settingsMenu {
@@ -177,12 +178,13 @@ video.background {
   color: #fff;
   font-size: 14px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, color 0.2s;
   text-align: left;
 }
 
 .settingsOption:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 100, 255, 0.2);
+  color: #0064ff;
 }
 
 .settingsOption:not(:last-child) {

@@ -1,4 +1,4 @@
-import { useEffect, useState, type KeyboardEvent } from 'react'
+import { useEffect, useState, useRef, type KeyboardEvent } from 'react'
 import AnimateHeight from 'react-animate-height'
 
 import { getSuggestions, search } from './lib/search.ts'
@@ -20,10 +20,18 @@ export default function App() {
   const [imageShown, setImageShown] = useState(false)
   const [reducedMotion, setReducedMotion] = useState<boolean>(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
-  const [useStaticImage, setUseStaticImage] = useState(false)
+
+  // Load user preference from localStorage, default to false (video)
+  const [useStaticImage, setUseStaticImage] = useState(() => {
+    const saved = localStorage.getItem('useStaticImage')
+    return saved ? saved === 'true' : false
+  })
+
   const [customImage, setCustomImage] = useState<string | null>(
     localStorage.getItem('customBackgroundImage')
   )
+
+  const settingsRef = useRef<HTMLDivElement>(null)
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -34,6 +42,7 @@ export default function App() {
         setCustomImage(imageUrl)
         localStorage.setItem('customBackgroundImage', imageUrl)
         setUseStaticImage(true)
+        localStorage.setItem('useStaticImage', 'true')
       }
       reader.readAsDataURL(file)
     }
@@ -43,6 +52,11 @@ export default function App() {
     setCustomImage(null)
     localStorage.removeItem('customBackgroundImage')
   }
+
+  // Persist useStaticImage preference
+  useEffect(() => {
+    localStorage.setItem('useStaticImage', useStaticImage.toString())
+  }, [useStaticImage])
 
   async function updateSuggestions(query: string) {
     const suggestions = await getSuggestions(query)
@@ -99,11 +113,27 @@ export default function App() {
     getRandomVideo(closest, useStaticImage).then(setVideo)
   }, [useStaticImage])
 
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (settingsRef.current && !settingsRef.current.contains(event.target as Node)) {
+        setSettingsOpen(false)
+      }
+    }
+
+    if (settingsOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [settingsOpen])
+
   return (
     <div className={styles.app}>
       {video ? (
         <>
-          {!reducedMotion && video.video ? (
+          {!reducedMotion && !useStaticImage && video.video ? (
             <video
               className={styles.background}
               src={video.video}
@@ -114,20 +144,22 @@ export default function App() {
               loop
             />
           ) : null}
-          <img
-            className={styles.background}
-            src={customImage || video.image}
-            data-shown={imageShown}
-            onLoad={() => setImageShown(true)}
-            alt="background"
-          />
+          {(useStaticImage || !video.video || reducedMotion) && (
+            <img
+              className={styles.background}
+              src={customImage || video.image}
+              data-shown={imageShown}
+              onLoad={() => setImageShown(true)}
+              alt="background"
+            />
+          )}
         </>
       ) : null}
 
       <div className={styles.overlay}></div>
 
       {/* Settings Button */}
-      <div className={styles.settingsContainer}>
+      <div className={styles.settingsContainer} ref={settingsRef}>
         <button
           className={styles.settingsButton}
           onClick={() => setSettingsOpen(prev => !prev)}
