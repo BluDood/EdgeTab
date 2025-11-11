@@ -1,6 +1,7 @@
 # EdgeTab
-
 A fresh, modern and minimal new tab page for your browser.
+
+[Download for Firefox](https://addons.mozilla.org/en-US/firefox/addon/edgetab) | [Download for Chrome](https://chromewebstore.google.com/detail/edgetab/lcmmpogmafbdcfgehjdapjoakhfhgmin)
 
 ## Development
 
