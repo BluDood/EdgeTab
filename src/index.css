@@ -9,6 +9,7 @@ body {
   font-weight: 300;
   background-color: #222;
   color: white;
+  user-select: none;
 }
 
 .material-symbols {

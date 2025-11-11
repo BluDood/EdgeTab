@@ -101,6 +101,7 @@
   border: #444 1px solid;
   border-radius: 8px;
   transition: 200ms ease;
+  font-size: 13px;
 }
 
 .switch .option:first-of-type {
@@ -136,7 +137,7 @@
 
 .buttons .button {
   all: unset;
-  padding: 6px 8px;
+  padding: 6px 12px;
   border-radius: 5px;
   background-color: #0064ff;
   cursor: pointer;
@@ -146,6 +147,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
+  font-size: 12px;
 }
 
 .buttons .button > span {
@@ -158,6 +160,7 @@
 
 .buttons .button[data-color='red'] {
   background-color: #f00;
+  padding: 6px;
 }
 
 .buttons .button input[type='file'] {
