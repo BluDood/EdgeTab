@@ -103,6 +103,23 @@ const Settings: React.FC = () => {
 
           <div className={styles.sliderContainer}>
             <div className={styles.sliderHeader}>
+              <label className={styles.sliderLabel}>Saturation</label>
+              <span className={styles.sliderValue}>
+                {backgroundEffects.saturation}%
+              </span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="500"
+              value={backgroundEffects.saturation}
+              onChange={e => updateEffect('saturation', Number(e.target.value))}
+              className={styles.slider}
+            />
+          </div>
+
+          <div className={styles.sliderContainer}>
+            <div className={styles.sliderHeader}>
               <label className={styles.sliderLabel}>Opacity</label>
               <span className={styles.sliderValue}>
                 {backgroundEffects.opacity}%

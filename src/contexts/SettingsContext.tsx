@@ -2,6 +2,7 @@ import { createContext, useEffect, useState } from 'react'
 
 interface BackgroundEffects {
   brightness: number
+  saturation: number
   opacity: number
   vignette: number
 }
@@ -29,6 +30,7 @@ const SettingsContext = createContext<SettingsContextProps>({
 
   backgroundEffects: {
     brightness: 100,
+    saturation: 100,
     opacity: 100,
     vignette: 0
   },
@@ -96,6 +98,7 @@ const SettingsContextProvider = ({
   const resetEffects = () => {
     setBackgroundEffects({
       brightness: 100,
+      saturation: 100,
       opacity: 100,
       vignette: 0
     })

@@ -72,7 +72,7 @@ const Background: React.FC = () => {
           backgroundImage: `radial-gradient(circle, transparent ${
             100 - backgroundEffects.vignette
           }%, rgba(0, 0, 0, ${backgroundEffects.vignette / 100}) 100%)`,
-          backdropFilter: `brightness(${backgroundEffects.brightness}%)`,
+          backdropFilter: `brightness(${backgroundEffects.brightness}%) saturate(${backgroundEffects.saturation}%)`,
           backgroundColor: `rgba(0, 0, 0, ${
             (100 - backgroundEffects.opacity) / 100
           })`
