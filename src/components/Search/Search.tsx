@@ -9,8 +9,9 @@ const Search: React.FC = () => {
   const [suggestions, setSuggestions] = useState<string[]>([])
   const [selected, setSelected] = useState(0)
   async function updateSuggestions(query: string) {
+    setSuggestions(s => [query, ...s.slice(1)])
     const suggestions = await getSuggestions(query)
-    setSuggestions([query, ...suggestions.slice(0, 5)])
+    setSuggestions(s => [...s.slice(0, 1), ...suggestions.slice(0, 4)])
     setSelected(0)
   }
 
