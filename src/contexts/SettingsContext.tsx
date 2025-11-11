@@ -85,6 +85,7 @@ const SettingsContextProvider = ({
         ? JSON.parse(saved)
         : {
             brightness: 100,
+            saturation: 100,
             opacity: 100,
             vignette: 0
           }
