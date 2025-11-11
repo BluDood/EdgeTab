@@ -3,11 +3,9 @@ import axios from 'axios'
 export const CONFIG_API =
   'https://assets.msn.com/resolver/api/resolve/v3/config'
 
-export const VIDEO_API =
-  'https://prod-streaming-video-msn-com.akamaized.net'
+export const VIDEO_API = 'https://prod-streaming-video-msn-com.akamaized.net'
 
-export const IMG_API =
-  'https://img-s-msn-com.akamaized.net/tenant/amp/entityid'
+export const IMG_API = 'https://img-s-msn-com.akamaized.net/tenant/amp/entityid'
 
 export const DEFAULT_CONFIG = {
   expType: 'AppConfig',
@@ -16,8 +14,7 @@ export const DEFAULT_CONFIG = {
 }
 
 function filterVideos(data: any) {
-  const videos =
-    data.configs['BackgroundImageWC/default'].properties.video.data
+  const videos = data.configs['BackgroundImageWC/default'].properties.video.data
 
   return videos.map((v: any) => {
     const { attribution, firstFrame, video } = v
@@ -52,15 +49,7 @@ async function getVideos() {
   return filterVideos(res.data)
 }
 
-export async function getRandomVideo(quality = 1080, useStaticImage = false) {
-  if (useStaticImage) {
-    return {
-      attribution: 'Static Image',
-      image: '/static/background.jpg', // place your image in /public/static/
-      video: ''
-    }
-  }
-
+export async function getRandomVideo(quality = 1080) {
   const videos = await getVideos()
   if (!videos || videos.length === 0) return null
 

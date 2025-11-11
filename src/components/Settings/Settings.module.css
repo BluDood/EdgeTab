@@ -1,0 +1,234 @@
+.settings {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+}
+
+.opener {
+  all: unset;
+  background: #4a4a4a;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.opener:hover,
+.settings:focus-within .opener {
+  transform: rotate(45deg);
+}
+
+.menu {
+  position: absolute;
+  top: 54px;
+  right: 0;
+  background: #1a1a1a;
+  border-radius: 16px;
+  padding: 0;
+  width: 280px;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: 500ms ease;
+  pointer-events: none;
+}
+
+.settings:focus-within .menu {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+}
+
+.close {
+  all: unset;
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 15px;
+  cursor: pointer;
+  opacity: 0.7;
+  font-size: 18px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: 200ms ease;
+}
+
+.close:hover {
+  opacity: 1;
+}
+
+.section {
+  padding: 12px 0;
+}
+
+.section h2 {
+  all: unset;
+  display: block;
+  padding: 8px 20px;
+  color: #4da6ff;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.settingsDivider {
+  height: 1px;
+  border-bottom: 1px solid #444;
+  margin: auto;
+  width: calc(100% - 40px);
+}
+
+.option {
+  all: unset;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: calc(100% - 40px);
+  padding: 12px 20px;
+  color: #e0e0e0;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, padding-left 0.2s;
+}
+
+.option:hover {
+  background: rgba(0, 100, 255, 0.12);
+  color: #fff;
+  padding-left: 24px;
+}
+
+.optionIcon {
+  font-size: 18px;
+  width: 20px;
+  text-align: center;
+}
+
+.optionText {
+  flex: 1;
+}
+
+.sliderContainer {
+  padding: 12px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sliderHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sliderLabel {
+  color: #e0e0e0;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sliderIcon {
+  font-size: 16px;
+}
+
+.sliderValue {
+  color: #4da6ff;
+  font-size: 13px;
+  font-weight: 600;
+  min-width: 45px;
+  text-align: right;
+}
+
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(
+    90deg,
+    rgba(100, 150, 255, 0.2),
+    rgba(0, 100, 255, 0.3)
+  );
+  outline: none;
+  cursor: pointer;
+  position: relative;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #0064ff;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.slider::-webkit-slider-thumb:active {
+  transform: scale(1.1);
+}
+
+.slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #0064ff;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.slider::-moz-range-thumb:hover {
+  transform: scale(1.2);
+}
+
+.slider::-moz-range-thumb:active {
+  transform: scale(1.1);
+}
+
+.resetButton {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: calc(100% - 80px);
+  margin: 12px auto 8px;
+  padding: 10px 16px;
+  background: rgba(0, 100, 255, 0.15);
+  border-radius: 8px;
+  color: #4da6ff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.1s;
+}
+
+.resetButton:hover {
+  background: rgba(0, 100, 255, 0.25);
+  border-color: rgba(77, 166, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+.resetButton:active {
+  transform: translateY(0);
+}
